@@ -1,8 +1,6 @@
 "use strict";
 
-import {
-	Display
-} from "../Modules/Executors.js";
+import { Display } from "../Modules/Executors.js";
 import { } from "../Modules/Extensions.js";
 
 const canvas = document.getElement(HTMLCanvasElement, `canvas#display`);
@@ -188,6 +186,9 @@ class Node extends EventTarget {
 		}
 	}
 	/** @type {Boolean} */ #isConnected = false;
+	/** @readonly */ get isConnected() {
+		return this.#isConnected;
+	}
 }
 //#endregion
 //#region Progenitor
@@ -221,15 +222,4 @@ class Progenitor extends Node {
 
 const progenitor = Progenitor.instance;
 
-export {
-	canvas,
-	context,
-	display,
-	ModificationTypes,
-	ModificationEvent,
-	Group,
-	Node,
-	progenitor,
-};
-
-export { };
+export { canvas, context, display, ModificationTypes, ModificationEvent, Group, Node, progenitor };

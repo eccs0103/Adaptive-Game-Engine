@@ -1,15 +1,8 @@
 "use strict";
 
-import {
-	Point2D
-} from "../Modules/Measures.js";
-import {
-	progenitor,
-	display
-} from "./Node.js";
-import {
-	Entity
-} from "./Entity.js";
+import { Point2D } from "../Modules/Measures.js";
+import { progenitor, display } from "./Node.js";
+import { Entity } from "./Entity.js";
 
 /** @type {Corporeal[]} */ const corporeals = [];
 
@@ -143,6 +136,4 @@ class Corporeal extends Entity {
 }
 //#endregion
 
-export {
-	Corporeal,
-};
+export { Corporeal };

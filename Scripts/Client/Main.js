@@ -1,10 +1,6 @@
 "use strict";
 
-import {
-	Node,
-	display,
-	progenitor,
-} from "./Components/Node.js";
+import { Node, canvas, context, display, progenitor } from "./Components/Node.js";
 import { } from "./Structure.js";
 
 void async function () {

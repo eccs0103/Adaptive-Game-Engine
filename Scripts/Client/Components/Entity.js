@@ -1,12 +1,7 @@
 "use strict";
 
-import {
-	ModificationEvent,
-	Node,
-} from "./Node.js";
-import {
-	Point2D
-} from "../Modules/Measures.js";
+import { ModificationEvent, Node } from "./Node.js";
+import { Point2D } from "../Modules/Measures.js";
 
 //#region Entity
 class Entity extends Node {
@@ -53,6 +48,4 @@ class Entity extends Node {
 }
 //#endregion
 
-export {
-	Entity,
-};
+export { Entity };
