@@ -129,12 +129,23 @@ class Renderer {
 	/**
 	 * @param {Entity} entity 
 	 */
-	static showCorners(entity) {
+	static drawArea(entity) {
+		const fillStyle = context.fillStyle;
 		const strokeStyle = context.strokeStyle;
+		context.fillStyle = Renderer.colorHighlight.pass(0.1).toString(true);
 		context.strokeStyle = Renderer.colorHighlight.toString(true);
 		const begin = entity.globalPosition["-"](entity.size["/"](Point2D.CONSTANT_TWO));
+		context.fillRect(begin.x, begin.y, entity.size.x, entity.size.y);
 		context.strokeRect(begin.x, begin.y, entity.size.x, entity.size.y);
+		context.strokeStyle = fillStyle;
 		context.strokeStyle = strokeStyle;
+	}
+	/**
+	 * @param {Entity} entity 
+	 */
+	static eraseArea(entity) {
+		const begin = entity.globalPosition["-"](entity.size["/"](Point2D.CONSTANT_TWO));
+		context.clearRect(begin.x, begin.y, entity.size.x, entity.size.y);
 	}
 }
 //#endregion
