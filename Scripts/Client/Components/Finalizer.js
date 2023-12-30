@@ -1,8 +1,7 @@
 "use strict";
 
-import { display, progenitor } from "./Node.js";
+import { display } from "./Node.js";
 
-progenitor.dispatchEvent(new Event(`adopt`));
 display.launched = true;
 
 export { };

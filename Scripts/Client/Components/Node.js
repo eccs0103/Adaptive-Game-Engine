@@ -9,17 +9,9 @@ const context = canvas.getContext(`2d`) ?? (() => {
 })();
 const display = new Display(context);
 
-//#region Modification types
-/** @enum {String} */ const ModificationTypes = {
-	/** @readonly */ add: `add`,
-	/** @readonly */ remove: `remove`,
-};
-Object.freeze(ModificationTypes);
-//#endregion
 //#region Modification event
 /**
  * @typedef VirtualModificationEventInit
- * @property {ModificationTypes} modification
  * @property {Node} node
  * 
  * @typedef {EventInit & VirtualModificationEventInit} ModificationEventInit
@@ -32,14 +24,7 @@ class ModificationEvent extends Event {
 	 */
 	constructor(type, dict) {
 		super(type, dict);
-		this.#modification = dict.modification;
 		this.#node = dict.node;
-	}
-	/** @type {ModificationTypes?} */ #modification = null;
-	/** @readonly */ get modification() {
-		return this.#modification ?? (() => {
-			throw new ReferenceError(`Modification property is missing`);
-		})();
 	}
 	/** @type {Node?} */ #node = null;
 	/** @readonly */ get node() {
@@ -55,32 +40,34 @@ class ModificationEvent extends Event {
  */
 class Group {
 	/**
-	 * @param {EventTarget} owner 
+	 * @param {Node} owner 
 	 */
 	constructor(owner) {
 		this.#owner = owner;
 	}
-	/** @type {EventTarget} */ #owner;
+	/** @type {Node} */ #owner;
 	/** @type {Set<T>} */ #nodes = new Set();
 	/**
 	 * @param {T} item 
 	 */
 	add(item) {
-		if (this.#owner.dispatchEvent(new ModificationEvent(`trymodify`, { modification: ModificationTypes.add, node: item, cancelable: true }))) {
-			this.#nodes.add(item);
-			this.#owner.dispatchEvent(new ModificationEvent(`modify`, { modification: ModificationTypes.add, node: item }));
-			item.dispatchEvent(new Event(`adopt`));
-		}
+		const parent = this.#owner, child = item;
+		if (!parent.dispatchEvent(new ModificationEvent(`tryadoptchild`, { node: child, cancelable: true }))) return;
+		if (!child.dispatchEvent(new ModificationEvent(`tryadopt`, { node: parent, cancelable: true }))) return;
+		this.#nodes.add(item);
+		parent.dispatchEvent(new ModificationEvent(`adoptchild`, { node: child }));
+		child.dispatchEvent(new ModificationEvent(`adopt`, { node: parent }));
 	}
 	/**
 	 * @param {T} item 
 	 */
 	remove(item) {
-		if (this.#owner.dispatchEvent(new ModificationEvent(`trymodify`, { modification: ModificationTypes.remove, node: item, cancelable: true }))) {
-			this.#nodes.delete(item);
-			this.#owner.dispatchEvent(new ModificationEvent(`modify`, { modification: ModificationTypes.remove, node: item }));
-			item.dispatchEvent(new Event(`abandon`));
-		}
+		const parent = this.#owner, child = item;
+		if (!parent.dispatchEvent(new ModificationEvent(`tryabandonchild`, { node: child, cancelable: true }))) return;
+		if (!child.dispatchEvent(new ModificationEvent(`tryabandon`, { node: parent, cancelable: true }))) return;
+		this.#nodes.add(item);
+		parent.dispatchEvent(new ModificationEvent(`abandonchild`, { node: child }));
+		child.dispatchEvent(new ModificationEvent(`abandon`, { node: parent }));
 	}
 	/**
 	 * @param {T} item 
@@ -133,31 +120,33 @@ class Node extends EventTarget {
 	constructor(name = ``) {
 		super();
 		this.name = name;
-		this.addEventListener(`modify`, (event) => {
-			if (event instanceof ModificationEvent) {
-				const { modification, node } = event;
-				if (modification === ModificationTypes.add) {
-					node.#parent = this;
-				}
-			}
-		});
-		this.addEventListener(`modify`, (event) => {
-			if (event instanceof ModificationEvent) {
-				const { modification, node } = event;
-				if (modification === ModificationTypes.remove) {
-					node.#parent = null;
-				}
-			}
-		});
 		this.addEventListener(`adopt`, (event) => {
+			if (event instanceof ModificationEvent) {
+				event.node.#parent = this;
+			}
+
 			const peak = this.peak;
 			if (peak === progenitor || peak.#isConnected) {
 				Node.#connect(this);
 			}
 		});
 		this.addEventListener(`abandon`, (event) => {
+			if (event instanceof ModificationEvent) {
+				event.node.#parent = null;
+			}
+
 			Node.#disconnect(this);
 		});
+
+		// this.addEventListener(`trymodify`, (event) => {
+		// 	if (event instanceof ModificationEvent) {
+		// 		const { node } = event;
+		// 		if (node === progenitor) {
+		// 			event.preventDefault();
+		// 			throw new EvalError(`Progenitor can't be adopted by any node`);
+		// 		}
+		// 	}
+		// });
 	}
 	/** @type {String} */ #name = ``;
 	get name() {
@@ -210,6 +199,11 @@ class Progenitor extends Node {
 		super(name);
 		if (Progenitor.#locked) throw new TypeError(`Illegal constructor`);
 
+		this.addEventListener(`tryadopt`, (event) => {
+			event.preventDefault();
+			throw new EvalError(`Progenitor can't be adopted by any node`);
+		});
+
 		display.addEventListener(`start`, (event) => {
 			this.dispatchEvent(new Event(event.type, { bubbles: true }));
 		});
@@ -217,9 +211,12 @@ class Progenitor extends Node {
 			this.dispatchEvent(new Event(event.type, { bubbles: true }));
 		});
 	}
+	/** @readonly */ get isConnected() {
+		return true;
+	}
 }
 //#endregion
 
 const progenitor = Progenitor.instance;
 
-export { canvas, context, display, ModificationTypes, ModificationEvent, Group, Node, progenitor };
+export { canvas, context, display, ModificationEvent, Group, Node, progenitor };
