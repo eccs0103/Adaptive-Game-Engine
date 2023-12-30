@@ -1,6 +1,6 @@
 "use strict";
 
-import { Node, canvas, context, display, progenitor } from "./Components/Node.js";
+import { progenitor } from "./Components/Node.js";
 import { } from "./Structure.js";
 
 try {
