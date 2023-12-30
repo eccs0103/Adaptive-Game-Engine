@@ -65,8 +65,8 @@ class Corporeal extends Entity {
 	 */
 	static #getCollider(corporeal) {
 		return [
-			corporeal.position["-"](corporeal.size["/"](2)),
-			corporeal.position["+"](corporeal.size["/"](2)),
+			corporeal.position["-"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
+			corporeal.position["+"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
 		];
 	}
 	/**
@@ -102,7 +102,7 @@ class Corporeal extends Entity {
 
 		this.addEventListener(`update`, (event) => {
 			this.velocity = this.velocity["+"](this.acceleration);
-			this.position = this.position["+"](this.#velocity["*"](display.delta));
+			this.position = this.position["+"](this.#velocity["*"](Point2D.repeat(display.delta)));
 		});
 	}
 	/** @type {Set<Corporeal>} */ #collisions = new Set();
@@ -124,7 +124,7 @@ class Corporeal extends Entity {
 		for (const force of this.forces) {
 			equivalent = equivalent["+"](force);
 		}
-		return equivalent["/"](this.mass);
+		return equivalent["/"](Point2D.repeat(this.mass));
 	}
 	/** @type {Point2D} */ #velocity = Point2D.ZERO;
 	get velocity() {

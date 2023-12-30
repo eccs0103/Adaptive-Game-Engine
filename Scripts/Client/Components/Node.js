@@ -9,6 +9,11 @@ const context = canvas.getContext(`2d`) ?? (() => {
 })();
 const display = new Display(context);
 
+context.translate(canvas.width / 2, canvas.height / 2);
+display.addEventListener(`resize`, (event) => {
+	context.translate(canvas.width / 2, canvas.height / 2);
+});
+
 //#region Modification event
 /**
  * @typedef VirtualModificationEventInit

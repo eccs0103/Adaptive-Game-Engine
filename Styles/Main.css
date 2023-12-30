@@ -3,7 +3,7 @@ body {
 	inset: 0;
 }
 
-canvas#dysplay {
+canvas#display {
 	position: absolute;
 	inset: 0;
 	width: 100%;

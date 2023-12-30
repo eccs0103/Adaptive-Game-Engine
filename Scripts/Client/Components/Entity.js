@@ -25,28 +25,39 @@ class Entity extends Node {
 	}
 	/** @type {Point2D} */ #position = Point2D.ZERO;
 	get position() {
+		return Object.freeze(this.#position);
+	}
+	set position(value) {
+		let result = value.clone();
+		this.#position = result;
+	}
+	get globalPosition() {
 		let result = this.#position;
 		try {
 			if (this.parent instanceof Entity) {
-				result = result["+"](this.parent.position);
+				result = result["+"](this.parent.globalPosition);
 			}
-		} catch { }
-		return result;
+		} finally {
+			return Object.freeze(result);
+		}
 	}
-	set position(value) {
+	set globalPosition(value) {
+		let result = value.clone();
 		try {
 			if (this.parent instanceof Entity) {
-				value = value["-"](this.parent.position);
+				value = result["-"](this.parent.globalPosition);
 			}
-		} catch { }
-		this.#position = value;
+		} finally {
+			this.#position = result;
+		}
 	}
 	/** @type {Point2D} */ #size = Point2D.ZERO;
 	get size() {
-		return this.#size;
+		return Object.freeze(this.#size);
 	}
 	set size(value) {
-		this.#size = value;
+		let result = value.clone();
+		this.#size = result;
 	}
 }
 //#endregion
