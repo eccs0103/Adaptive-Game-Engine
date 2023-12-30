@@ -61,13 +61,13 @@ class Group {
 		this.#owner = owner;
 	}
 	/** @type {EventTarget} */ #owner;
-	/** @type {Set<T>} */ #Nodes = new Set();
+	/** @type {Set<T>} */ #nodes = new Set();
 	/**
 	 * @param {T} item 
 	 */
 	add(item) {
 		if (this.#owner.dispatchEvent(new ModificationEvent(`trymodify`, { modification: ModificationTypes.add, node: item, cancelable: true }))) {
-			this.#Nodes.add(item);
+			this.#nodes.add(item);
 			this.#owner.dispatchEvent(new ModificationEvent(`modify`, { modification: ModificationTypes.add, node: item }));
 			item.dispatchEvent(new Event(`adopt`));
 		}
@@ -77,7 +77,7 @@ class Group {
 	 */
 	remove(item) {
 		if (this.#owner.dispatchEvent(new ModificationEvent(`trymodify`, { modification: ModificationTypes.remove, node: item, cancelable: true }))) {
-			this.#Nodes.delete(item);
+			this.#nodes.delete(item);
 			this.#owner.dispatchEvent(new ModificationEvent(`modify`, { modification: ModificationTypes.remove, node: item }));
 			item.dispatchEvent(new Event(`abandon`));
 		}
@@ -87,10 +87,10 @@ class Group {
 	 * @returns {Boolean}
 	 */
 	has(item) {
-		return this.#Nodes.has(item);
+		return this.#nodes.has(item);
 	}
 	clear() {
-		for (const item of this.#Nodes) {
+		for (const item of this.#nodes) {
 			this.remove(item);
 		}
 	}
@@ -98,7 +98,7 @@ class Group {
 	 * @returns {Generator<T>}
 	 */
 	*[Symbol.iterator]() {
-		for (const item of this.#Nodes) {
+		for (const item of this.#nodes) {
 			yield item;
 		}
 		return;
