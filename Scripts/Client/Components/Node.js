@@ -115,38 +115,38 @@ class Node extends EventTarget {
 		target.dispatchEvent(new Event(`disconnect`));
 	}
 	/**
+	 * @param {Node} target 
+	 */
+	static #isProgenitor(target) {
+		return Reflect.getPrototypeOf(target) === Progenitor.prototype;
+	}
+	/**
 	 * @param {String} name 
 	 */
 	constructor(name = ``) {
 		super();
 		this.name = name;
-		this.addEventListener(`adopt`, (event) => {
+
+		this.addEventListener(`adoptchild`, (event) => {
 			if (event instanceof ModificationEvent) {
 				event.node.#parent = this;
 			}
+		});
+		this.addEventListener(`abandonchild`, (event) => {
+			if (event instanceof ModificationEvent) {
+				event.node.#parent = null;
+			}
+		});
 
+		this.addEventListener(`adopt`, (event) => {
 			const peak = this.peak;
-			if (peak === progenitor || peak.#isConnected) {
+			if (Node.#isProgenitor(peak) || peak.#isConnected) {
 				Node.#connect(this);
 			}
 		});
 		this.addEventListener(`abandon`, (event) => {
-			if (event instanceof ModificationEvent) {
-				event.node.#parent = null;
-			}
-
 			Node.#disconnect(this);
 		});
-
-		// this.addEventListener(`trymodify`, (event) => {
-		// 	if (event instanceof ModificationEvent) {
-		// 		const { node } = event;
-		// 		if (node === progenitor) {
-		// 			event.preventDefault();
-		// 			throw new EvalError(`Progenitor can't be adopted by any node`);
-		// 		}
-		// 	}
-		// });
 	}
 	/** @type {String} */ #name = ``;
 	get name() {
@@ -174,7 +174,7 @@ class Node extends EventTarget {
 			}
 		}
 	}
-	/** @type {Boolean} */ #isConnected = false;
+	/** @type {Boolean} */ #isConnected = Node.#isProgenitor(this);
 	/** @readonly */ get isConnected() {
 		return this.#isConnected;
 	}
@@ -210,9 +210,6 @@ class Progenitor extends Node {
 		display.addEventListener(`update`, (event) => {
 			this.dispatchEvent(new Event(event.type, { bubbles: true }));
 		});
-	}
-	/** @readonly */ get isConnected() {
-		return true;
 	}
 }
 //#endregion
