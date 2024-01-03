@@ -24,7 +24,7 @@ display.addEventListener(`resize`, (event) => {
 
 class ModificationEvent extends Event {
 	/**
-	 * @param {String} type 
+	 * @param {string} type 
 	 * @param {ModificationEventInit} dict 
 	 */
 	constructor(type, dict) {
@@ -46,9 +46,13 @@ class ModificationEvent extends Event {
 class Group {
 	/**
 	 * @param {Node} owner 
+	 * @param {T[]} items 
 	 */
-	constructor(owner) {
+	constructor(owner, ...items) {
 		this.#owner = owner;
+		for (const item of items) {
+			this.add(item);
+		}
 	}
 	/** @type {Node} */ #owner;
 	/** @type {Set<T>} */ #nodes = new Set();
@@ -76,7 +80,7 @@ class Group {
 	}
 	/**
 	 * @param {T} item 
-	 * @returns {Boolean}
+	 * @returns {boolean}
 	 */
 	has(item) {
 		return this.#nodes.has(item);
@@ -85,6 +89,9 @@ class Group {
 		for (const item of this.#nodes) {
 			this.remove(item);
 		}
+	}
+	get size() {
+		return this.#nodes.size;
 	}
 	/**
 	 * @returns {Generator<T>}
@@ -126,7 +133,7 @@ class Node extends EventTarget {
 		return Reflect.getPrototypeOf(target) === Progenitor.prototype;
 	}
 	/**
-	 * @param {String} name 
+	 * @param {string} name 
 	 */
 	constructor(name = ``) {
 		super();
@@ -153,7 +160,7 @@ class Node extends EventTarget {
 			Node.#disconnect(this);
 		});
 	}
-	/** @type {String} */ #name = ``;
+	/** @type {string} */ #name = ``;
 	get name() {
 		return this.#name;
 	}
@@ -179,7 +186,7 @@ class Node extends EventTarget {
 			}
 		}
 	}
-	/** @type {Boolean} */ #isConnected = Node.#isProgenitor(this);
+	/** @type {boolean} */ #isConnected = Node.#isProgenitor(this);
 	/** @readonly */ get isConnected() {
 		return this.#isConnected;
 	}
@@ -196,9 +203,9 @@ class Progenitor extends Node {
 			return Progenitor.#instance;
 		})();
 	}
-	/** @type {Boolean} */ static #locked = true;
+	/** @type {boolean} */ static #locked = true;
 	/**
-	 * @param {String} name 
+	 * @param {string} name 
 	 */
 	constructor(name = `Progenitor`) {
 		super(name);
@@ -218,7 +225,7 @@ class Progenitor extends Node {
 	}
 	/**
 	 * @param {Event} event 
-	 * @returns {Boolean}
+	 * @returns {boolean}
 	 */
 	dispatchEvent(event) {
 		/** @type {Node[]} */ const stack = [this];

@@ -16,7 +16,7 @@ import { Entity } from "./Entity.js";
 
 class CollisionEvent extends Event {
 	/**
-	 * @param {String} type 
+	 * @param {string} type 
 	 * @param {CollisionEventInit} dict 
 	 */
 	constructor(type, dict) {
@@ -85,7 +85,7 @@ class Corporeal extends Entity {
 		);
 	}
 	/**
-	 * @param {String} name 
+	 * @param {string} name 
 	 */
 	constructor(name = ``) {
 		super(name);
@@ -111,7 +111,7 @@ class Corporeal extends Entity {
 	/** @readonly */ get forces() {
 		return this.#forces;
 	}
-	/** @type {Number} */ #mass = 1;
+	/** @type {number} */ #mass = 1;
 	get mass() {
 		return this.#mass;
 	}

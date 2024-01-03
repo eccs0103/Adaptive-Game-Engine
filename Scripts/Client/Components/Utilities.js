@@ -1,14 +1,13 @@
 "use strict";
 
 import { Color } from "../Modules/Colors.js";
-import { Point2D } from "../Modules/Measures.js";
 import { Entity } from "./Entity.js";
-import { Node, context, progenitor } from "./Node.js";
+import { Node, canvas, context, progenitor } from "./Node.js";
 
 //#region Animator
 class Animator extends EventTarget {
 	/**
-	 * @param {Number} duration 
+	 * @param {number} duration 
 	 */
 	constructor(duration) {
 		super();
@@ -24,11 +23,11 @@ class Animator extends EventTarget {
 			}
 		}, { signal: frameController.signal });
 	}
-	/** @type {Number} */ #duration;
+	/** @type {number} */ #duration;
 	/** @readonly */ get duration() {
 		return this.#duration;
 	}
-	/** @type {Number} */ #frame;
+	/** @type {number} */ #frame;
 	/** @readonly */ get frame() {
 		return this.#frame;
 	}
@@ -125,27 +124,34 @@ class Walker {
 //#endregion
 //#region Renderer
 class Renderer {
-	static colorHighlight = Color.viaHSL(308, 100, 50);
-	/**
-	 * @param {Entity} entity 
-	 */
-	static drawArea(entity) {
-		const fillStyle = context.fillStyle;
-		const strokeStyle = context.strokeStyle;
-		context.fillStyle = Renderer.colorHighlight.pass(0.1).toString(true);
-		context.strokeStyle = Renderer.colorHighlight.toString(true);
-		const begin = entity.globalPosition["-"](entity.size["/"](Point2D.CONSTANT_TWO));
-		context.fillRect(begin.x, begin.y, entity.size.x, entity.size.y);
-		context.strokeRect(begin.x, begin.y, entity.size.x, entity.size.y);
-		context.strokeStyle = fillStyle;
-		context.strokeStyle = strokeStyle;
+	/** @type {Color} */ static #colorHighlight = Color.viaHSL(308, 100, 50);
+	static get colorHighlight() {
+		return this.#colorHighlight;
+	}
+	static set colorHighlight(value) {
+		this.#colorHighlight = value;
 	}
 	/**
 	 * @param {Entity} entity 
 	 */
-	static eraseArea(entity) {
-		const begin = entity.globalPosition["-"](entity.size["/"](Point2D.CONSTANT_TWO));
-		context.clearRect(begin.x, begin.y, entity.size.x, entity.size.y);
+	static markArea(entity) {
+		context.save();
+		context.fillStyle = Renderer.colorHighlight.pass(0.1).toString(true);
+		context.strokeStyle = Renderer.colorHighlight.toString(true);
+		const { globalPosition: position, size } = entity;
+		context.beginPath();
+		context.moveTo(position.x - size.x / 2, position.y - size.y / 2);
+		context.lineTo(position.x + size.x / 2, position.y - size.y / 2);
+		context.lineTo(position.x + size.x / 2, position.y + size.y / 2);
+		context.lineTo(position.x - size.x / 2, position.y + size.y / 2);
+		context.closePath();
+		context.stroke();
+		context.fill();
+		context.restore();
+	}
+	static clear() {
+		const { e: x, f: y } = context.getTransform();
+		context.clearRect(x, y, canvas.width, canvas.height);
 	}
 }
 //#endregion

@@ -4,6 +4,14 @@
 Engine for creating adaptive games. Based on Adaptive Webpage Template.
 
 ## Feed
+### Update 1.2.4 (03.01.2024) : 2.3.7
+- Updated the core.
+- Now, each connected element will trigger an event `new Event("render")` during rendering.
+- The `Group` collection can now be initialized with initial elements.
+- Additionally, you can get the length of the collection using `Group.size`.
+- Added the `UserInterface` class and its initial instance `userInterface`. `UserInterface` is an object that automatically transforms to the full screen size. The transformation of this object cannot be manually changed, and it can only be adopted from `Progenitor`.
+- Optimized functions of the `Renderer` class.
+
 ### Update 1.2.0 (31.12.2023) : 2.3.6
 - The context size will now adjust to the screen size.
 - Numerous errors have been fixed.

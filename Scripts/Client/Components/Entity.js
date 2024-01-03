@@ -6,7 +6,7 @@ import { Point2D } from "../Modules/Measures.js";
 //#region Entity
 class Entity extends Node {
 	/**
-	 * @param {String} name 
+	 * @param {string} name 
 	 */
 	constructor(name = ``) {
 		super(name);
