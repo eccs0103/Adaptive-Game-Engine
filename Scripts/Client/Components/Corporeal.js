@@ -41,9 +41,9 @@ class Corporeal extends Entity {
 					const other = corporeals[index2];
 
 					const isCollisionBefore = target.#collisions.has(other);
-					const isCollisionNow = Corporeal.isCollide(target, other);
+					const isCollisionNow = Corporeal.getCollision(target, other);
 
-					if (isCollisionNow) {
+					if (isCollisionNow.length > 0) {
 						if (!isCollisionBefore) {
 							target.#collisions.add(other);
 							target.dispatchEvent(new CollisionEvent(`collisionbegin`, { other: other }));
@@ -64,25 +64,34 @@ class Corporeal extends Entity {
 	 * @param {Corporeal} corporeal 
 	 * @returns {[Point2D, Point2D]}
 	 */
-	static #getCollider(corporeal) {
+	static #getOutline(corporeal) {
 		return [
-			corporeal.position["-"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
-			corporeal.position["+"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
+			corporeal.globalPosition["-"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
+			corporeal.globalPosition["+"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
 		];
 	}
 	/**
 	 * @param {Corporeal} first 
 	 * @param {Corporeal} second 
+	 * @returns {Point2D[]}
 	 */
-	static isCollide(first, second) {
-		const [begin1, end1] = Corporeal.#getCollider(first);
-		const [begin2, end2] = Corporeal.#getCollider(second);
-		return (
-			begin1.x <= end2.x &&
-			begin2.x <= end1.x &&
-			begin1.y <= end2.y &&
-			begin2.y <= end1.y
-		);
+	static getCollision(first, second) {
+		/** @type {Point2D[]} */ const points = [];
+		const [begin1, end1] = Corporeal.#getOutline(first);
+		const [begin2, end2] = Corporeal.#getOutline(second);
+		if (begin1.x <= end2.x && begin2.x <= end1.x && begin1.y <= end2.y && begin2.y <= end1.y) {
+			const begin = new Point2D(Math.max(begin1.x, begin2.x), Math.max(begin1.y, begin2.y));
+			const end = new Point2D(Math.min(end1.x, end2.x), Math.min(end1.y, end2.y));
+			for (let y = begin.y; y <= end.y; y++) {
+				for (let x = begin.x; x <= end.x; x++) {
+					const point = new Point2D(x, y);
+					if (first.isInner(point["-"](first.globalPosition)) && second.isInner(point["-"](second.globalPosition))) {
+						points.push(point);
+					}
+				}
+			}
+		}
+		return points;
 	}
 	/**
 	 * @param {string} name 
@@ -105,6 +114,13 @@ class Corporeal extends Entity {
 			this.velocity = this.velocity["+"](this.acceleration);
 			this.position = this.position["+"](this.#velocity["*"](Point2D.repeat(display.delta)));
 		});
+	}
+	/**
+	 * @param {Point2D} point 
+	 * @returns {boolean}
+	 */
+	isInner(point) {
+		throw new ReferenceError(`Not implemented function`);
 	}
 	/** @type {Set<Corporeal>} */ #collisions = new Set();
 	/** @type {Set<Point2D>} */ #forces = new Set();
