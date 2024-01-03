@@ -151,7 +151,7 @@ class Renderer {
 	}
 	static clear() {
 		const { e: x, f: y } = context.getTransform();
-		context.clearRect(x, y, canvas.width, canvas.height);
+		context.clearRect(-x, -y, canvas.width, canvas.height);
 	}
 }
 //#endregion
