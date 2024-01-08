@@ -3,7 +3,17 @@
 import { Group, ModificationEvent, Node } from "./Node.js";
 import { Point2D } from "../Modules/Measures.js";
 
+const { atan2, PI } = Math;
+
 //#region Entity
+/** @enum {number} */ const AreaSectors = {
+	/** @readonly */ top: 0,
+	/** @readonly */ right: 1,
+	/** @readonly */ bottom: 2,
+	/** @readonly */ left: 3,
+};
+Object.freeze(AreaSectors);
+
 class Entity extends Node {
 	/**
 	 * @param {string} name 
@@ -59,7 +69,30 @@ class Entity extends Node {
 		let result = value.clone();
 		this.#size = result;
 	}
+	/**
+	 * @param {Entity} other 
+	 * @returns {AreaSectors}
+	 */
+	getAreaSector(other) {
+		const alpha = atan2(this.size.x / 2, this.size.y / 2);
+
+		const pointOtherPosition = other.globalPosition["-"](this.globalPosition);
+		let angle = atan2(pointOtherPosition.x, pointOtherPosition.y);
+		angle += alpha;
+		if (angle < 0) angle += 2 * PI;
+
+		const sectors = [2 * alpha, PI - 2 * alpha, 2 * alpha, PI - 2 * alpha];
+		for (let begin = 0, index = 0; index < sectors.length; index++) {
+			const sector = sectors[index];
+			const end = begin + sector;
+			if (begin <= angle && angle < end) {
+				return index;
+			}
+			begin = end;
+		}
+		throw new RangeError(`Angle ${angle} out of range [0 - 2π).`);
+	}
 }
 //#endregion
 
-export { Entity };
+export { AreaSectors, Entity };

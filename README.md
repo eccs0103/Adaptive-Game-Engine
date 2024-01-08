@@ -4,6 +4,12 @@
 Engine for creating adaptive games. Based on Adaptive Webpage Template.
 
 ## Feed
+### Update 1.2.6 (08.01.2024) : 2.3.8
+- Now, the coordinate plane coincides with the mathematical coordinate plane.
+- Added the `Entity.getAreaSector` function, which shows in which sector the object is located relative to it.
+- Work on optimization.
+- Added the `Corporeal.getCollision` function, which shows collision points of objects if they exist. To achieve this, you need to implement the `isMesh` function on objects - it indicates whether a point belongs to this object or not.
+
 ### Update 1.2.4 (03.01.2024) : 2.3.7
 - Updated the core.
 - Now, each connected element will trigger an event `new Event("render")` during rendering.

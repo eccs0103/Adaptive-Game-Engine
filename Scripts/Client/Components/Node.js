@@ -9,10 +9,14 @@ const context = canvas.getContext(`2d`) ?? (() => {
 })();
 const display = new Display(context);
 
-context.translate(canvas.width / 2, canvas.height / 2);
 display.addEventListener(`resize`, (event) => {
-	context.translate(canvas.width / 2, canvas.height / 2);
+	const transform = context.getTransform();
+	transform.e = canvas.width / 2;
+	transform.f = canvas.height / 2;
+	transform.d *= -1;
+	context.setTransform(transform);
 });
+display.dispatchEvent(new UIEvent(`resize`));
 
 //#region Modification event
 /**
