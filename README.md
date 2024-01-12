@@ -4,6 +4,9 @@
 Engine for creating adaptive games. Based on Adaptive Webpage Template.
 
 ## Feed
+### Update 1.2.6 (12.01.2024) : 2.4.0
+- Updated core.
+
 ### Update 1.2.6 (08.01.2024) : 2.3.8
 - Now, the coordinate plane coincides with the mathematical coordinate plane.
 - Added the `Entity.getAreaSector` function, which shows in which sector the object is located relative to it.
