@@ -1,7 +1,7 @@
 "use strict";
 
-import { progenitor } from "./Components/Node.js";
-import { } from "./Structure.js";
+import { progenitor } from "../Scripts/Components/Node.js";
+import { } from "../Scripts/Structure.js";
 
 try {
 	progenitor.addEventListener(`start`, (event) => {
