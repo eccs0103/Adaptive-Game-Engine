@@ -5,8 +5,17 @@ import { Point2D } from "../Modules/Measures.js";
 
 const { atan2, PI } = Math;
 
+/**
+ * Represents a constant `Point2D(2, 2)` value.
+ */
+const CONSTANT_TWO_2D = Point2D.repeat(2);
+
 //#region Entity
-/** @enum {number} */ const AreaSectors = {
+/** 
+ * Enumeration representing different sectors in the area.
+ * @enum {number}
+ */
+const AreaSectors = {
 	/** @readonly */ top: 0,
 	/** @readonly */ right: 1,
 	/** @readonly */ bottom: 2,
@@ -14,9 +23,13 @@ const { atan2, PI } = Math;
 };
 Object.freeze(AreaSectors);
 
+/**
+ * Represents a generic entity node with event capabilities.
+ */
 class Entity extends Node {
 	/**
-	 * @param {string} name 
+	 * Creates a new instance of the Entity class.
+	 * @param {string} name - The name of the entity.
 	 */
 	constructor(name = ``) {
 		super(name);
@@ -30,17 +43,30 @@ class Entity extends Node {
 		});
 	}
 	/** @type {Group<Entity>} */ #children = new Group(this);
-	/** @readonly */ get children() {
+	/**
+	 * Gets the children of the entity.
+	 * @readonly
+	 */
+	get children() {
 		return this.#children;
 	}
 	/** @type {Point2D} */ #position = Point2D.ZERO;
+	/**
+	 * Gets the position of the entity.
+	 */
 	get position() {
 		return Object.freeze(this.#position);
 	}
+	/**
+	 * Sets the position of the entity.
+	 */
 	set position(value) {
 		let result = value.clone();
 		this.#position = result;
 	}
+	/**
+	 * Gets the global position of the entity.
+	 */
 	get globalPosition() {
 		let result = this.#position;
 		try {
@@ -51,6 +77,9 @@ class Entity extends Node {
 			return Object.freeze(result);
 		}
 	}
+	/**
+	 * Sets the global position of the entity.
+	 */
 	set globalPosition(value) {
 		let result = value.clone();
 		try {
@@ -62,16 +91,23 @@ class Entity extends Node {
 		}
 	}
 	/** @type {Point2D} */ #size = Point2D.ZERO;
+	/**
+	 * Gets the size of the entity.
+	 */
 	get size() {
 		return Object.freeze(this.#size);
 	}
+	/**
+	 * Sets the size of the entity.
+	 */
 	set size(value) {
 		let result = value.clone();
 		this.#size = result;
 	}
 	/**
-	 * @param {Entity} other 
-	 * @returns {AreaSectors}
+	 * Gets the sector of the area in which another entity is located.
+	 * @param {Entity} other - The other entity.
+	 * @returns {AreaSectors} - The sector of the area.
 	 */
 	getAreaSector(other) {
 		const alpha = atan2(this.size.x / 2, this.size.y / 2);
@@ -95,4 +131,4 @@ class Entity extends Node {
 }
 //#endregion
 
-export { AreaSectors, Entity };
+export { CONSTANT_TWO_2D, AreaSectors, Entity };

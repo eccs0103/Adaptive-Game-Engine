@@ -1,13 +1,22 @@
 "use strict";
 
-import { Display } from "../Modules/Executors.js";
+import { FastDisplay } from "../Modules/Executors.js";
 import { } from "../Modules/Extensions.js";
 
+/**
+ * Represents the canvas element.
+ */
 const canvas = document.getElement(HTMLCanvasElement, `canvas#display`);
+/**
+ * Represents the 2D rendering context of the canvas.
+ */
 const context = canvas.getContext(`2d`) ?? (() => {
 	throw new TypeError(`Context is missing`);
 })();
-const display = new Display(context);
+/**
+ * Represents a FastDisplay instance using the canvas context.
+ */
+const display = new FastDisplay(context);
 
 display.addEventListener(`resize`, (event) => {
 	const transform = context.getTransform();
@@ -26,17 +35,27 @@ display.dispatchEvent(new UIEvent(`resize`));
  * @typedef {EventInit & VirtualModificationEventInit} ModificationEventInit
  */
 
+/**
+ * Represents a ModificationEvent class used for tree modification events.
+ */
 class ModificationEvent extends Event {
 	/**
-	 * @param {string} type 
-	 * @param {ModificationEventInit} dict 
+	 * Creates a new instance of ModificationEvent.
+	 * @param {string} type - The type of the event.
+	 * @param {ModificationEventInit} dict - The initialization dictionary.
 	 */
 	constructor(type, dict) {
 		super(type, dict);
 		this.#node = dict.node;
 	}
 	/** @type {Node?} */ #node = null;
-	/** @readonly */ get node() {
+	/**
+	 * Gets the node property of the ModificationEvent.
+	 * @readonly
+	 * @throws {ReferenceError} If the property is missing.
+	 * @returns {Node}
+	 */
+	get node() {
 		return this.#node ?? (() => {
 			throw new ReferenceError(`Modification property is missing`);
 		})();
@@ -45,12 +64,14 @@ class ModificationEvent extends Event {
 //#endregion
 //#region Group
 /**
+ * Represents a group of nodes.
  * @template {Node} T
  */
 class Group {
 	/**
-	 * @param {Node} owner 
-	 * @param {T[]} items 
+	 * Creates a new instance of the Group class.
+	 * @param {Node} owner - The owner node of the group.
+	 * @param {T[]} items - The initial items to add to the group.
 	 */
 	constructor(owner, ...items) {
 		this.#owner = owner;
@@ -61,7 +82,8 @@ class Group {
 	/** @type {Node} */ #owner;
 	/** @type {Set<T>} */ #nodes = new Set();
 	/**
-	 * @param {T} item 
+	 * Adds an item to the group.
+	 * @param {T} item - The item to add.
 	 */
 	add(item) {
 		const parent = this.#owner, child = item;
@@ -72,7 +94,8 @@ class Group {
 		child.dispatchEvent(new ModificationEvent(`adopt`, { node: parent }));
 	}
 	/**
-	 * @param {T} item 
+	 * Removes an item from the group.
+	 * @param {T} item - The item to remove.
 	 */
 	remove(item) {
 		const parent = this.#owner, child = item;
@@ -83,22 +106,31 @@ class Group {
 		child.dispatchEvent(new ModificationEvent(`abandon`, { node: parent }));
 	}
 	/**
-	 * @param {T} item 
-	 * @returns {boolean}
+	 * Checks if the group contains a specific item.
+	 * @param {T} item - The item to check for.
+	 * @returns {boolean} - True if the group contains the item, false otherwise.
 	 */
 	has(item) {
 		return this.#nodes.has(item);
 	}
+	/**
+	 * Removes all items from the group.
+	 */
 	clear() {
 		for (const item of this.#nodes) {
 			this.remove(item);
 		}
 	}
+	/**
+	 * Gets the number of items in the group.
+	 * @returns {number}
+	 */
 	get size() {
 		return this.#nodes.size;
 	}
 	/**
-	 * @returns {Generator<T>}
+	 * Returns an iterator for the items in the group.
+	 * @returns {Generator<T>} - The iterator for the items.
 	 */
 	*[Symbol.iterator]() {
 		for (const item of this.#nodes) {
@@ -109,6 +141,9 @@ class Group {
 }
 //#endregion
 //#region Node
+/**
+ * Represents a generic node with event capabilities.
+ */
 class Node extends EventTarget {
 	/**
 	 * @param {Node} target 
@@ -137,7 +172,8 @@ class Node extends EventTarget {
 		return Reflect.getPrototypeOf(target) === Progenitor.prototype;
 	}
 	/**
-	 * @param {string} name 
+	 * Creates a new instance of the Node class.
+	 * @param {string} name - The name of the node.
 	 */
 	constructor(name = ``) {
 		super();
@@ -165,23 +201,42 @@ class Node extends EventTarget {
 		});
 	}
 	/** @type {string} */ #name = ``;
+	/**
+	 * Gets the name of the node.
+	 */
 	get name() {
 		return this.#name;
 	}
+	/**
+	 * Sets the name of the node.
+	 */
 	set name(value) {
 		this.#name = value;
 	}
 	/** @type {Node?} */ #parent = null;
-	/** @readonly */ get parent() {
+	/**
+	 * Gets the parent node.
+	 * @readonly
+	 * @throws {ReferenceError} - If the parent is null.
+	 */
+	get parent() {
 		return this.#parent ?? (() => {
 			throw new ReferenceError(`Parent of '${this.name}' is null`);
 		})();
 	}
 	/** @type {Group<Node>} */ #children = new Group(this);
-	/** @readonly */ get children() {
+	/**
+	 * Gets the children of the node.
+	 * @readonly
+	 */
+	get children() {
 		return this.#children;
 	}
-	/** @readonly */ get peak() {
+	/**
+	 * Gets the topmost ancestor of the node.
+	 * @readonly
+	 */
+	get peak() {
 		for (let current = (/** @type {Node} */ (this)); true;) {
 			try {
 				current = current.parent;
@@ -191,15 +246,26 @@ class Node extends EventTarget {
 		}
 	}
 	/** @type {boolean} */ #isConnected = Node.#isProgenitor(this);
-	/** @readonly */ get isConnected() {
+	/**
+	 * Gets whether the node is connected.
+	 * @readonly
+	 */
+	get isConnected() {
 		return this.#isConnected;
 	}
 }
 //#endregion
 //#region Progenitor
+/**
+ * Represents a special node called Progenitor with specific behaviors.
+ */
 class Progenitor extends Node {
 	/** @type {Progenitor?} */ static #instance = null;
-	/** @readonly */ static get instance() {
+	/** 
+	 * Gets the singleton instance of Progenitor.
+	 * @readonly
+	 */
+	static get instance() {
 		return Progenitor.#instance ?? (() => {
 			Progenitor.#locked = false;
 			Progenitor.#instance = new Progenitor();
@@ -209,7 +275,9 @@ class Progenitor extends Node {
 	}
 	/** @type {boolean} */ static #locked = true;
 	/**
-	 * @param {string} name 
+	 * Creates a new instance of the Progenitor class.
+	 * @param {string} name - The name of the Progenitor node.
+	 * @throws {TypeError} - If the constructor is called manually.
 	 */
 	constructor(name = `Progenitor`) {
 		super(name);
@@ -228,8 +296,9 @@ class Progenitor extends Node {
 		});
 	}
 	/**
-	 * @param {Event} event 
-	 * @returns {boolean}
+	 * Dispatches an event to the Progenitor and its descendants.
+	 * @param {Event} event - The event to dispatch.
+	 * @returns {boolean} - True if the event was not canceled, false otherwise.
 	 */
 	dispatchEvent(event) {
 		/** @type {Node[]} */ const stack = [this];
@@ -253,6 +322,9 @@ class Progenitor extends Node {
 }
 //#endregion
 
+/**
+ * Represents the singleton instance of the Progenitor class.
+ */
 const progenitor = Progenitor.instance;
 
 export { canvas, context, display, ModificationEvent, Group, Node, progenitor };

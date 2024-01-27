@@ -2,7 +2,7 @@
 
 import { Point2D } from "../Modules/Measures.js";
 import { progenitor, display } from "./Node.js";
-import { Entity } from "./Entity.js";
+import { CONSTANT_TWO_2D, Entity } from "./Entity.js";
 
 /** @type {Corporeal[]} */ const corporeals = [];
 
@@ -16,17 +16,27 @@ const { min, max } = Math;
  * @typedef {EventInit & VirtualCollisionEvent} CollisionEventInit
  */
 
+/**
+ * Represents a collision event class.
+ */
 class CollisionEvent extends Event {
 	/**
-	 * @param {string} type 
-	 * @param {CollisionEventInit} dict 
+	 * Creates a new instance of the CollisionEvent class.
+	 * @param {string} type - The type of the event.
+	 * @param {CollisionEventInit} dict - The initialization dictionary.
 	 */
 	constructor(type, dict) {
 		super(type, dict);
 		this.#other = dict.other;
 	}
 	/** @type {Corporeal?} */ #other = null;
-	/** @readonly */ get other() {
+	/** 
+	 * Gets the other corporeal entity involved in the collision.
+	 * @readonly
+	 * @throws {ReferenceError} - If the property is missing.
+	 * @returns {Corporeal}
+	 */
+	get other() {
 		return this.#other ?? (() => {
 			throw new ReferenceError(`Other property is missing`);
 		})();
@@ -34,6 +44,9 @@ class CollisionEvent extends Event {
 }
 //#endregion
 //#region Corporeal
+/**
+ * Represents a corporeal entity with collision and physics capabilities.
+ */
 class Corporeal extends Entity {
 	static {
 		progenitor.addEventListener(`update`, (event) => {
@@ -68,14 +81,15 @@ class Corporeal extends Entity {
 	 */
 	static #getArea(corporeal) {
 		return [
-			corporeal.globalPosition["-"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
-			corporeal.globalPosition["+"](corporeal.size["/"](Point2D.CONSTANT_TWO)),
+			corporeal.globalPosition["-"](corporeal.size["/"](CONSTANT_TWO_2D)),
+			corporeal.globalPosition["+"](corporeal.size["/"](CONSTANT_TWO_2D)),
 		];
 	}
 	/**
-	 * @param {Corporeal} first 
-	 * @param {Corporeal} second 
-	 * @returns {boolean}
+	 * Checks if two corporeal entities' areas collide.
+	 * @param {Corporeal} first - The first corporeal entity.
+	 * @param {Corporeal} second - The second corporeal entity.
+	 * @returns {boolean} - Whether the areas collide.
 	 */
 	static isAreaCollide(first, second) {
 		const [begin1, end1] = Corporeal.#getArea(first);
@@ -83,9 +97,10 @@ class Corporeal extends Entity {
 		return (begin1.x <= end2.x && begin2.x <= end1.x && begin1.y <= end2.y && begin2.y <= end1.y);
 	}
 	/**
-	 * @param {Corporeal} first 
-	 * @param {Corporeal} second 
-	 * @returns {Point2D[]}
+	 * Gets the collision points between two corporeal entities.
+	 * @param {Corporeal} first - The first corporeal entity.
+	 * @param {Corporeal} second - The second corporeal entity.
+	 * @returns {Point2D[]} - The collision points.
 	 */
 	static getCollision(first, second) {
 		const [begin1, end1] = Corporeal.#getArea(first);
@@ -104,7 +119,8 @@ class Corporeal extends Entity {
 		return points;
 	}
 	/**
-	 * @param {string} name 
+	 * Creates a new instance of the Corporeal class.
+	 * @param {string} name - The name of the corporeal entity.
 	 */
 	constructor(name = ``) {
 		super(name);
@@ -126,28 +142,44 @@ class Corporeal extends Entity {
 		});
 	}
 	/**
+	 * Checks if a point is within the mesh of the corporeal entity.
 	 * @abstract
-	 * @param {Point2D} point 
-	 * @returns {boolean}
+	 * @param {Point2D} point - The point to check.
+	 * @returns {boolean} - Whether the point is within the mesh.
+	 * @throws {ReferenceError} - If function not implemented.
 	 */
 	isMesh(point) {
 		throw new ReferenceError(`Not implemented function`);
 	}
 	/** @type {Set<Corporeal>} */ #collisions = new Set();
 	/** @type {Set<Point2D>} */ #forces = new Set();
-	/** @readonly */ get forces() {
+	/** 
+	 * Gets the set of forces applied to the corporeal entity.
+	 * @readonly
+	 */
+	get forces() {
 		return this.#forces;
 	}
 	/** @type {number} */ #mass = 1;
+	/**
+	 * Gets the mass of the corporeal entity.
+	 */
 	get mass() {
 		return this.#mass;
 	}
+	/**
+	 * Sets the mass of the corporeal entity.
+	 */
 	set mass(value) {
 		if (value > 0) {
 			this.#mass = value;
 		} else throw new RangeError(`Mass ${value} is out of range (0 - +∞)`);
 	}
-	/** @readonly */ get acceleration() {
+	/** 
+	 * Gets the acceleration of the corporeal entity.
+	 * @readonly
+	 */
+	get acceleration() {
 		let equivalent = Point2D.ZERO;
 		for (const force of this.forces) {
 			equivalent = equivalent["+"](force);
@@ -155,9 +187,15 @@ class Corporeal extends Entity {
 		return equivalent["/"](Point2D.repeat(this.mass));
 	}
 	/** @type {Point2D} */ #velocity = Point2D.ZERO;
+	/**
+	 * Gets the velocity of the corporeal entity.
+	 */
 	get velocity() {
 		return this.#velocity;
 	}
+	/**
+	 * Sets the velocity of the corporeal entity.
+	 */
 	set velocity(value) {
 		this.#velocity = value;
 	}

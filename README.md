@@ -4,6 +4,10 @@
 Engine for creating adaptive games. Based on Adaptive Webpage Template.
 
 ## Feed
+### Update 1.3.0 : AWT 2.5.0 (27.01.2024)
+- Updated core.
+- Added comments with descriptions to all components.
+
 ### Update 1.2.7 (12.01.2024) : 2.4.1
 - Updated core.
 
