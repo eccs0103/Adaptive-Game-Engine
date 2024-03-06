@@ -1,6 +1,6 @@
 "use strict";
 
-import { Color } from "../Modules/Colors.js";
+import { Color } from "../Modules/Palette.js";
 import { Entity } from "./Entity.js";
 import { Node, canvas, context, progenitor } from "./Node.js";
 
@@ -27,7 +27,8 @@ class Animator extends EventTarget {
 			}
 		}, { signal: frameController.signal });
 	}
-	/** @type {number} */ #duration;
+	/** @type {number} */
+	#duration;
 	/**
 	 * Gets the duration of the animation.
 	 * @readonly
@@ -35,7 +36,8 @@ class Animator extends EventTarget {
 	get duration() {
 		return this.#duration;
 	}
-	/** @type {number} */ #frame;
+	/** @type {number} */
+	#frame;
 	/**
 	 * Gets the current frame of the animation.
 	 * @readonly
@@ -109,7 +111,8 @@ class Walker {
 	constructor(root) {
 		this.#root = root;
 	}
-	/** @type {Node} */ #root;
+	/** @type {Node} */
+	#root;
 	/**
 	 * Traverse the tree downward and apply an action to each node.
 	 * @param {(node: Node) => any} action - The action to be applied to each node.
@@ -151,7 +154,8 @@ class Walker {
  * Utility class for rendering entities with highlighting capabilities.
  */
 class Renderer {
-	/** @type {Color} */ static #colorHighlight = Color.viaHSL(308, 100, 50);
+	/** @type {Color} */
+	static #colorHighlight = Color.viaHSL(308, 100, 50);
 	/**
 	 * Gets the color used for highlighting.
 	 */

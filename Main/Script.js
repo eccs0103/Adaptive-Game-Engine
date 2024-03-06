@@ -11,5 +11,5 @@ try {
 		// Frame update callback
 	});
 } catch (error) {
-	await window.prevent(document.analysis(error));
+	await window.stabilize(Error.generate(error));
 }

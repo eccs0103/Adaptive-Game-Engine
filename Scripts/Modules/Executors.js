@@ -10,7 +10,7 @@ class Engine extends EventTarget {
 	/**
 	 * Gets the launch status of the engine.
 	 * @abstract
-	 * @returns {boolean} - True if the engine is launched, false otherwise.
+	 * @returns {boolean} True if the engine is launched, false otherwise.
 	 */
 	get launched() {
 		throw new ReferenceError(`Not implemented function`);
@@ -18,7 +18,7 @@ class Engine extends EventTarget {
 	/**
 	 * Sets the launch status of the engine.
 	 * @abstract
-	 * @param {boolean} value - The launch status to set.
+	 * @param {boolean} value The launch status to set.
 	 */
 	set launched(value) {
 		throw new ReferenceError(`Not implemented function`);
@@ -26,7 +26,7 @@ class Engine extends EventTarget {
 	/**
 	 * Gets the Frames Per Second (FPS) of the engine.
 	 * @abstract
-	 * @returns {number} - The current FPS of the engine.
+	 * @returns {number} The current FPS of the engine.
 	 */
 	get FPS() {
 		throw new ReferenceError(`Not implemented function`);
@@ -35,7 +35,7 @@ class Engine extends EventTarget {
 	 * Gets the time delta between frames.
 	 * @readonly
 	 * @abstract
-	 * @returns {number} - The time delta between frames.
+	 * @returns {number} The time delta between frames.
 	 */
 	get delta() {
 		throw new ReferenceError(`Not implemented function`);
@@ -46,7 +46,7 @@ class Engine extends EventTarget {
 class FastEngine extends Engine {
 	/**
 	 * Constructs a FastEngine instance.
-	 * @param {boolean} launch - Whether the engine should be launched initially. Default is false.
+	 * @param {boolean} launch Whether the engine should be launched initially. Default is false.
 	 */
 	constructor(launch = false) {
 		super();
@@ -60,7 +60,7 @@ class FastEngine extends Engine {
 		}, { signal: controller.signal });
 		/**
 		 * Handles the animation frame callback.
-		 * @param {DOMHighResTimeStamp} time - The current timestamp.
+		 * @param {DOMHighResTimeStamp} time The current timestamp.
 		 */
 		const callback = (time) => {
 			let current = time;
@@ -81,26 +81,28 @@ class FastEngine extends Engine {
 		requestAnimationFrame(callback);
 		this.launched = launch;
 	}
-	/** @type {DOMHighResTimeStamp} */ #time = 0;
+	/** @type {DOMHighResTimeStamp} */
+	#time = 0;
 	/**
 	 * Gets the elapsed time since the engine started.
 	 * @readonly
-	 * @returns {DOMHighResTimeStamp} - The elapsed time.
+	 * @returns {DOMHighResTimeStamp} The elapsed time.
 	 */
 	get time() {
 		return this.#time;
 	}
-	/** @type {boolean} */ #launched = false;
+	/** @type {boolean} */
+	#launched = false;
 	/**
 	 * Gets the launch status of the engine.
-	 * @returns {boolean} - True if the engine is launched, false otherwise.
+	 * @returns {boolean} True if the engine is launched, false otherwise.
 	 */
 	get launched() {
 		return this.#launched;
 	}
 	/**
 	 * Sets the launch status of the engine.
-	 * @param {boolean} value - The launch status to set.
+	 * @param {boolean} value The launch status to set.
 	 */
 	set launched(value) {
 		if (this.#launched !== value) {
@@ -111,18 +113,19 @@ class FastEngine extends Engine {
 			this.dispatchEvent(new Event(`launch`));
 		}
 	}
-	/** @type {number} */ #FPSLimit = Infinity;
+	/** @type {number} */
+	#FPSLimit = Infinity;
 	/**
 	 * Gets the FPS limit of the engine.
-	 * @returns {number} - The FPS limit.
+	 * @returns {number} The FPS limit.
 	 */
 	get FPSLimit() {
 		return this.#FPSLimit;
 	}
 	/**
 	 * Sets the FPS limit of the engine.
-	 * @param {number} value - The FPS limit to set.
-	 * @throws {RangeError} - If the FPS limit is not higher than 0.
+	 * @param {number} value The FPS limit to set.
+	 * @throws {RangeError} If the FPS limit is not higher than 0.
 	 */
 	set FPSLimit(value) {
 		if (value <= 0) {
@@ -130,11 +133,12 @@ class FastEngine extends Engine {
 		}
 		this.#FPSLimit = value;
 	}
-	/** @type {number} */ #FPS = 0;
+	/** @type {number} */
+	#FPS = 0;
 	/**
 	 * Gets the current FPS of the engine.
 	 * @readonly
-	 * @returns {number} - The current FPS.
+	 * @returns {number} The current FPS.
 	 */
 	get FPS() {
 		return this.#FPS;
@@ -142,7 +146,7 @@ class FastEngine extends Engine {
 	/**
 	 * Gets the time delta between frames.
 	 * @readonly
-	 * @returns {number} - The time delta between frames.
+	 * @returns {number} The time delta between frames.
 	 */
 	get delta() {
 		return 1 / this.#FPS;
@@ -153,7 +157,7 @@ class FastEngine extends Engine {
 class PreciseEngine extends Engine {
 	/**
 	 * Constructs a PreciseEngine instance.
-	 * @param {boolean} launch - Whether the engine should be launched initially. Default is false.
+	 * @param {boolean} launch Whether the engine should be launched initially. Default is false.
 	 */
 	constructor(launch = false) {
 		super();
@@ -174,17 +178,18 @@ class PreciseEngine extends Engine {
 		setTimeout(callback, this.#delta);
 		this.launched = launch;
 	}
-	/** @type {boolean} */ #launched = false;
+	/** @type {boolean} */
+	#launched = false;
 	/**
 	 * Gets the launch status of the engine.
-	 * @returns {boolean} - True if the engine is launched, false otherwise.
+	 * @returns {boolean} True if the engine is launched, false otherwise.
 	 */
 	get launched() {
 		return this.#launched;
 	}
 	/**
 	 * Sets the launch status of the engine.
-	 * @param {boolean} value - The launch status to set.
+	 * @param {boolean} value The launch status to set.
 	 */
 	set launched(value) {
 		if (this.#launched !== value) {
@@ -195,18 +200,19 @@ class PreciseEngine extends Engine {
 			this.dispatchEvent(new Event(`launch`));
 		}
 	}
-	/** @type {number} */ #delta = (1000 / 60);
+	/** @type {number} */
+	#delta = (1000 / 60);
 	/**
 	 * Gets the FPS of the engine.
-	 * @returns {number} - The current FPS.
+	 * @returns {number} The current FPS.
 	 */
 	get FPS() {
 		return (1000 / this.#delta);
 	}
 	/**
 	 * Sets the FPS of the engine.
-	 * @param {number} value - The FPS to set.
-	 * @throws {RangeError} - If the FPS is not higher than 0.
+	 * @param {number} value The FPS to set.
+	 * @throws {RangeError} If the FPS is not higher than 0.
 	 */
 	set FPS(value) {
 		if (value <= 0) {
@@ -217,7 +223,7 @@ class PreciseEngine extends Engine {
 	/**
 	 * Gets the time delta between frames.
 	 * @readonly
-	 * @returns {number} - The time delta between frames.
+	 * @returns {number} The time delta between frames.
 	 */
 	get delta() {
 		return this.#delta * 1000;
@@ -234,8 +240,8 @@ class PreciseEngine extends Engine {
 class FastDisplay extends FastEngine {
 	/**
 	 * Constructs a FastDisplay instance.
-	 * @param {T} context - The rendering context for the display.
-	 * @param {boolean} launched - Whether the display should be launched initially. Default is false.
+	 * @param {T} context The rendering context for the display.
+	 * @param {boolean} launched Whether the display should be launched initially. Default is false.
 	 */
 	constructor(context, launched = false) {
 		super(launched);
@@ -245,7 +251,8 @@ class FastDisplay extends FastEngine {
 			this.#resize();
 		});
 	}
-	/** @type {RenderingContext} */ #context;
+	/** @type {RenderingContext} */
+	#context;
 	/**
 	 * Resizes the canvas based on the current dimensions.
 	 * Dispatches resize and update events after resizing.
@@ -271,8 +278,8 @@ class FastDisplay extends FastEngine {
 class PreciseDisplay extends PreciseEngine {
 	/**
 	 * Constructs a PreciseDisplay instance.
-	 * @param {T} context - The rendering context for the display.
-	 * @param {boolean} launched - Whether the display should be launched initially. Default is false.
+	 * @param {T} context The rendering context for the display.
+	 * @param {boolean} launched Whether the display should be launched initially. Default is false.
 	 */
 	constructor(context, launched = false) {
 		super(launched);
@@ -282,7 +289,8 @@ class PreciseDisplay extends PreciseEngine {
 			this.#resize();
 		});
 	}
-	/** @type {RenderingContext} */ #context;
+	/** @type {RenderingContext} */
+	#context;
 	/**
 	 * Resizes the canvas based on the current dimensions.
 	 * Dispatches resize and update events after resizing.

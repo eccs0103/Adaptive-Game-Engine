@@ -42,7 +42,8 @@ class Entity extends Node {
 			}
 		});
 	}
-	/** @type {Group<Entity>} */ #children = new Group(this);
+	/** @type {Group<Entity>} */
+	#children = new Group(this);
 	/**
 	 * Gets the children of the entity.
 	 * @readonly
@@ -50,7 +51,8 @@ class Entity extends Node {
 	get children() {
 		return this.#children;
 	}
-	/** @type {Point2D} */ #position = Point2D.ZERO;
+	/** @type {Point2D} */
+	#position = Point2D.ZERO;
 	/**
 	 * Gets the position of the entity.
 	 */
@@ -90,7 +92,8 @@ class Entity extends Node {
 			this.#position = result;
 		}
 	}
-	/** @type {Point2D} */ #size = Point2D.ZERO;
+	/** @type {Point2D} */
+	#size = Point2D.ZERO;
 	/**
 	 * Gets the size of the entity.
 	 */

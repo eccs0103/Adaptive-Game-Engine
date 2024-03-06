@@ -4,7 +4,8 @@ import { Point2D } from "../Modules/Measures.js";
 import { progenitor, display } from "./Node.js";
 import { CONSTANT_TWO_2D, Entity } from "./Entity.js";
 
-/** @type {Corporeal[]} */ const corporeals = [];
+/** @type {Corporeal[]} */
+const corporeals = [];
 
 const { min, max } = Math;
 
@@ -29,7 +30,8 @@ class CollisionEvent extends Event {
 		super(type, dict);
 		this.#other = dict.other;
 	}
-	/** @type {Corporeal?} */ #other = null;
+	/** @type {Corporeal?} */
+	#other = null;
 	/** 
 	 * Gets the other corporeal entity involved in the collision.
 	 * @readonly
@@ -107,7 +109,8 @@ class Corporeal extends Entity {
 		const [begin2, end2] = Corporeal.#getArea(second);
 		const begin = new Point2D(max(begin1.x, begin2.x), max(begin1.y, begin2.y));
 		const end = new Point2D(min(end1.x, end2.x), min(end1.y, end2.y));
-		/** @type {Point2D[]} */ const points = [];
+		/** @type {Point2D[]} */
+		const points = [];
 		for (let y = begin.y; y <= end.y; y++) {
 			for (let x = begin.x; x <= end.x; x++) {
 				const point = new Point2D(x, y);
@@ -151,8 +154,10 @@ class Corporeal extends Entity {
 	isMesh(point) {
 		throw new ReferenceError(`Not implemented function`);
 	}
-	/** @type {Set<Corporeal>} */ #collisions = new Set();
-	/** @type {Set<Point2D>} */ #forces = new Set();
+	/** @type {Set<Corporeal>} */
+	#collisions = new Set();
+	/** @type {Set<Point2D>} */
+	#forces = new Set();
 	/** 
 	 * Gets the set of forces applied to the corporeal entity.
 	 * @readonly
@@ -160,7 +165,8 @@ class Corporeal extends Entity {
 	get forces() {
 		return this.#forces;
 	}
-	/** @type {number} */ #mass = 1;
+	/** @type {number} */
+	#mass = 1;
 	/**
 	 * Gets the mass of the corporeal entity.
 	 */
@@ -186,7 +192,8 @@ class Corporeal extends Entity {
 		}
 		return equivalent["/"](Point2D.repeat(this.mass));
 	}
-	/** @type {Point2D} */ #velocity = Point2D.ZERO;
+	/** @type {Point2D} */
+	#velocity = Point2D.ZERO;
 	/**
 	 * Gets the velocity of the corporeal entity.
 	 */

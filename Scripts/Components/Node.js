@@ -48,7 +48,8 @@ class ModificationEvent extends Event {
 		super(type, dict);
 		this.#node = dict.node;
 	}
-	/** @type {Node?} */ #node = null;
+	/** @type {Node?} */
+	#node = null;
 	/**
 	 * Gets the node property of the ModificationEvent.
 	 * @readonly
@@ -79,8 +80,10 @@ class Group {
 			this.add(item);
 		}
 	}
-	/** @type {Node} */ #owner;
-	/** @type {Set<T>} */ #nodes = new Set();
+	/** @type {Node} */
+	#owner;
+	/** @type {Set<T>} */
+	#nodes = new Set();
 	/**
 	 * Adds an item to the group.
 	 * @param {T} item - The item to add.
@@ -200,7 +203,8 @@ class Node extends EventTarget {
 			Node.#disconnect(this);
 		});
 	}
-	/** @type {string} */ #name = ``;
+	/** @type {string} */
+	#name = ``;
 	/**
 	 * Gets the name of the node.
 	 */
@@ -213,7 +217,8 @@ class Node extends EventTarget {
 	set name(value) {
 		this.#name = value;
 	}
-	/** @type {Node?} */ #parent = null;
+	/** @type {Node?} */
+	#parent = null;
 	/**
 	 * Gets the parent node.
 	 * @readonly
@@ -224,7 +229,8 @@ class Node extends EventTarget {
 			throw new ReferenceError(`Parent of '${this.name}' is null`);
 		})();
 	}
-	/** @type {Group<Node>} */ #children = new Group(this);
+	/** @type {Group<Node>} */
+	#children = new Group(this);
 	/**
 	 * Gets the children of the node.
 	 * @readonly
@@ -245,7 +251,8 @@ class Node extends EventTarget {
 			}
 		}
 	}
-	/** @type {boolean} */ #isConnected = Node.#isProgenitor(this);
+	/** @type {boolean} */
+	#isConnected = Node.#isProgenitor(this);
 	/**
 	 * Gets whether the node is connected.
 	 * @readonly
@@ -260,7 +267,8 @@ class Node extends EventTarget {
  * Represents a special node called Progenitor with specific behaviors.
  */
 class Progenitor extends Node {
-	/** @type {Progenitor?} */ static #instance = null;
+	/** @type {Progenitor?} */
+	static #instance = null;
 	/** 
 	 * Gets the singleton instance of Progenitor.
 	 * @readonly
@@ -273,7 +281,8 @@ class Progenitor extends Node {
 			return Progenitor.#instance;
 		})();
 	}
-	/** @type {boolean} */ static #locked = true;
+	/** @type {boolean} */
+	static #locked = true;
 	/**
 	 * Creates a new instance of the Progenitor class.
 	 * @param {string} name - The name of the Progenitor node.
@@ -301,7 +310,8 @@ class Progenitor extends Node {
 	 * @returns {boolean} - True if the event was not canceled, false otherwise.
 	 */
 	dispatchEvent(event) {
-		/** @type {Node[]} */ const stack = [this];
+		/** @type {Node[]} */
+		const stack = [this];
 		while (stack.length > 0) {
 			let node = stack.pop() ?? (() => {
 				throw new EvalError(`Invalid stack evalution`);

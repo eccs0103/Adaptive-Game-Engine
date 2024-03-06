@@ -16,7 +16,8 @@ class InterfaceItem extends Entity {
 	constructor(name = ``) {
 		super(name);
 	}
-	/** @type {Point2D} */ #anchor = Point2D.ZERO;
+	/** @type {Point2D} */
+	#anchor = Point2D.ZERO;
 	/**
 	 * Gets the anchor point of the interface item.
 	 */
