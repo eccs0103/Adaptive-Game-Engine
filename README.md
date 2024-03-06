@@ -1,7 +1,7 @@
 # Adaptive Game Engine
 
 ## Information
-Engine for creating adaptive animations and small games. Based on Adaptive Webpage Template.\
+Engine for creating adaptive animations and small games.\
 **Version backward compatibility is NOT supported.**
 
 ## Feed
