@@ -5,7 +5,7 @@ Engine for creating adaptive animations and small games.\
 **Version backward compatibility is NOT supported.**
 
 ## Feed
-### 1.3.1 : Adaptive Core 2.6.7 (06.03.2024)
+### 1.3.1 : Adaptive Core 2.6.8 (09.03.2024)
 - Core updated.
 
 ### Update 1.3.0 : AWT 2.5.0 (27.01.2024)
