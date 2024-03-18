@@ -76,7 +76,7 @@ class UserInterface extends InterfaceItem {
 	constructor(name = `User interface`) {
 		super(name);
 		super.size = new Point2D(canvas.width, canvas.height);
-		engine.addEventListener(`resize`, (event) => {
+		window.addEventListener(`resize`, (event) => {
 			super.size = new Point2D(canvas.width, canvas.height);
 		});
 		this.addEventListener(`tryadopt`, (event) => {

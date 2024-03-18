@@ -14,13 +14,16 @@ const context = canvas.getContext(`2d`) ?? (() => {
 	throw new TypeError(`Context is missing`);
 })();
 window.addEventListener(`resize`, (event) => {
+	const { width, height } = canvas.getBoundingClientRect();
+	canvas.width = width;
+	canvas.height = height;
+
 	const transform = context.getTransform();
 	transform.e = canvas.width / 2;
 	transform.f = canvas.height / 2;
 	transform.d *= -1;
 	context.setTransform(transform);
 });
-window.dispatchEvent(new UIEvent(`resize`));
 
 /**
  * Represents a FastEngine instance using the canvas context.
