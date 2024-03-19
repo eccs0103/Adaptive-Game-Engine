@@ -7,6 +7,7 @@ Engine for creating adaptive animations and small games.\
 ## Feed
 ### 1.3.1 : Adaptive Core 2.6.8 (19.03.2024)
 - Core updated.
+- Fixed an issue with missing parent in `Entity`.
 
 ### Update 1.3.0 : AWT 2.5.0 (27.01.2024)
 - Updated core.
