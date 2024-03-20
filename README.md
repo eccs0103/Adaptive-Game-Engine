@@ -5,6 +5,11 @@ Engine for creating adaptive animations and small games.\
 **Version backward compatibility is NOT supported.**
 
 ## Feed
+### 1.3.4 : Adaptive Core 2.6.8 (21.03.2024)
+- Function `isMesh` moved from `Corporeal` to `Entity`.
+- Constants from `Entity` moved to `Node`.
+- `Progenitor` now recognizes pointer clicks and movements on the canvas for any type of device.
+
 ### 1.3.1 : Adaptive Core 2.6.8 (19.03.2024)
 - Core updated.
 - Fixed an issue with missing parent in `Entity`.
