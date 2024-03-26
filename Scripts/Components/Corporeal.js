@@ -141,9 +141,8 @@ class Corporeal extends Entity {
 		});
 		this.addEventListener(`disconnect`, (event) => {
 			const index = Corporeal.#instances.indexOf(this);
-			if (index > 0) {
-				Corporeal.#instances.splice(index, 1);
-			}
+			if (index < 0) return;
+			Corporeal.#instances.splice(index, 1);
 		});
 
 		this.addEventListener(`update`, (event) => {

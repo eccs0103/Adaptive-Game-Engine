@@ -98,9 +98,8 @@ class Entity extends Node {
 		});
 		this.addEventListener(`disconnect`, (event) => {
 			const index = Entity.#instances.indexOf(this);
-			if (index > 0) {
-				Entity.#instances.splice(index, 1);
-			}
+			if (index < 0) return;
+			Entity.#instances.splice(index, 1);
 		});
 
 		this.addEventListener(`tryadoptchild`, (event) => {
