@@ -5,8 +5,9 @@ Engine for creating adaptive animations and small games.\
 **Version backward compatibility is NOT supported.**
 
 ## Feed
-### 1.3.4 : Adaptive Core 2.6.9 (22.03.2024)
+### 1.3.5 : Adaptive Core 2.6.9 (22.03.2024)
 - Core updated.
+- Listener names added.
 
 ### 1.3.4 : Adaptive Core 2.6.8 (21.03.2024)
 - Function `isMesh` moved from `Corporeal` to `Entity`.
