@@ -402,17 +402,6 @@ class Progenitor extends Node {
 			return Progenitor.#instance;
 		})();
 	}
-	static #regexMobilePattern = /Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Silk/i;
-	static #regexTabletPattern = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i;
-	/**
-	 * @returns {DeviceTypes}
-	 */
-	static #getDeviceType() {
-		const agent = navigator.userAgent;
-		return this.#regexMobilePattern.test(agent) ? DeviceTypes.mobile
-			: this.#regexTabletPattern.test(agent) ? DeviceTypes.tablet
-				: DeviceTypes.desktop;
-	}
 	/** @type {boolean} */
 	static #locked = true;
 	/**
@@ -436,52 +425,60 @@ class Progenitor extends Node {
 			this.dispatchEvent(new Event(`update`, { bubbles: true }));
 		});
 
-		canvas.addEventListener(`touchstart`, (event) => {
-			this.#fixTouchPosition(event);
-		});
-
-
-		/**
-		 * @todo Fix and optimize listeners
-		 */
-		window.addEventListener(`resize`, (event) => {
-			this.#deviceType = Progenitor.#getDeviceType();
-		});
-
+		/** @type {boolean} */
+		let isPointerDown = false;
+		/** @type {boolean} */
+		let wasPointerDown = false;
 		canvas.addEventListener(`mousedown`, (event) => {
 			if (event.button !== 0) return;
-			if (this.#deviceType !== DeviceTypes.desktop) return;
 			this.#fixMousePosition(event);
-			this.dispatchEvent(new PointerEvent(`pointerdown`, { position: this.#pointPointerPosition }));
+			isPointerDown = true;
 		});
 		canvas.addEventListener(`touchstart`, (event) => {
-			if (this.#deviceType !== DeviceTypes.mobile && this.#deviceType !== DeviceTypes.tablet) return;
 			this.#fixTouchPosition(event);
-			this.dispatchEvent(new PointerEvent(`pointerdown`, { position: this.#pointPointerPosition }));
+			isPointerDown = true;
 		});
 
+		/** @type {boolean} */
+		let isPointerUp = false;
 		window.addEventListener(`mouseup`, (event) => {
-			if (event.button !== 0) return;
-			if (this.#deviceType !== DeviceTypes.desktop) return;
+			if (event.button !== 0 || !wasPointerDown) return;
 			this.#fixMousePosition(event);
-			this.dispatchEvent(new PointerEvent(`pointerup`, { position: this.#pointPointerPosition }));
+			isPointerUp = true;
 		});
 		window.addEventListener(`touchend`, (event) => {
-			if (this.#deviceType !== DeviceTypes.mobile && this.#deviceType !== DeviceTypes.tablet) return;
+			if (!wasPointerDown) return;
 			this.#fixTouchPosition(event);
-			this.dispatchEvent(new PointerEvent(`pointerup`, { position: this.#pointPointerPosition }));
+			isPointerUp = true;
 		});
 
+		/** @type {boolean} */
+		let isPointerMove = false;
 		window.addEventListener(`mousemove`, (event) => {
 			if (event.button !== 0) return;
-			if (this.#deviceType !== DeviceTypes.desktop) return;
 			this.#fixMousePosition(event);
-			this.dispatchEvent(new PointerEvent(`pointermove`, { position: this.#pointPointerPosition }));
+			isPointerMove = true;
 		});
 		window.addEventListener(`touchmove`, (event) => {
-			if (this.#deviceType !== DeviceTypes.mobile && this.#deviceType !== DeviceTypes.tablet) return;
 			this.#fixTouchPosition(event);
-			this.dispatchEvent(new PointerEvent(`pointermove`, { position: this.#pointPointerPosition }));
+			isPointerMove = true;
+		});
+
+		this.addEventListener(`update`, (event) => {
+			if (isPointerDown) {
+				this.dispatchEvent(new PointerEvent(`pointerdown`, { position: this.#pointPointerPosition }));
+				wasPointerDown = true;
+				isPointerDown = false;
+			}
+			if (isPointerUp) {
+				this.dispatchEvent(new PointerEvent(`pointerup`, { position: this.#pointPointerPosition }));
+				wasPointerDown = false;
+				isPointerUp = false;
+			}
+			if (isPointerMove) {
+				this.dispatchEvent(new PointerEvent(`pointermove`, { position: this.#pointPointerPosition }));
+				isPointerMove = false;
+			}
 		});
 	}
 	/**
@@ -506,8 +503,6 @@ class Progenitor extends Node {
 		// @ts-ignore
 		return super.addEventListener(type, listener, options);
 	}
-	/** @type {DeviceTypes} */
-	#deviceType = Progenitor.#getDeviceType();
 	/** @type {Readonly<Point2D>} */
 	#pointPointerPosition = Object.freeze(Point2D.repeat(NaN));
 	/**

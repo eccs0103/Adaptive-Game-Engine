@@ -1,6 +1,6 @@
 "use strict";
 
-import { Group, Node, PointerEvent } from "./Node.js";
+import { Group, Node, PointerEvent, progenitor } from "./Node.js";
 import { Point2D } from "../Modules/Measures.js";
 
 const { atan2, PI } = Math;
@@ -9,7 +9,10 @@ const { atan2, PI } = Math;
 /**
  * @typedef VirtualEntityEventMap
  * @property {PointerEvent} click
+ * @property {PointerEvent} hold
+ * @property {PointerEvent} dragbegin
  * @property {PointerEvent} drag
+ * @property {PointerEvent} dragend
  * 
  * @typedef {import("./Node.js").NodeEventMap & VirtualEntityEventMap} EntityEventMap
  */
@@ -27,15 +30,79 @@ const AreaSectors = {
 Object.freeze(AreaSectors);
 
 /**
+ * @typedef PointerData
+ * @property {Entity} entity
+ * @property {number} idTimeout
+ * @property {boolean} isMoved
+ */
+
+/**
  * Represents a generic entity node with event capabilities.
  */
 class Entity extends Node {
+	/** @type {number} */
+	static #holdInterval = 300;
+	static get holdInterval() {
+		return this.#holdInterval;
+	}
+	static set holdInterval(value) {
+		if (Number.isFinite(value) && value > 0) {
+			this.#holdInterval = value;
+		} else throw new RangeError(`Hold ${value} interval is out of range (0 - +∞)`);
+	}
+	/** @type {Entity[]} */
+	static #instances = [];
+	static {
+		/** @type {PointerData?} */
+		let atPointerData = null;
+		progenitor.addEventListener(`pointerdown`, (event) => {
+			const entity = Entity.#instances.find(entity => entity.isMesh(event.position));
+			if (entity === undefined) return;
+			const idTimeout = setTimeout(() => {
+				entity.dispatchEvent(new PointerEvent(`hold`, { position: event.position }));
+				atPointerData = null;
+			}, Entity.#holdInterval);
+			atPointerData = { entity: entity, idTimeout: idTimeout, isMoved: false };
+		});
+		progenitor.addEventListener(`pointerup`, (event) => {
+			if (atPointerData === null) return;
+			const { entity, idTimeout, isMoved } = atPointerData;
+			if (isMoved) {
+				entity.dispatchEvent(new PointerEvent(`dragend`, { position: event.position }));
+			} else if (entity.isMesh(event.position)) {
+				entity.dispatchEvent(new PointerEvent(`click`, { position: event.position }));
+			}
+			clearTimeout(idTimeout);
+			atPointerData = null;
+		});
+		progenitor.addEventListener(`pointermove`, (event) => {
+			if (atPointerData === null) return;
+			const { entity, idTimeout, isMoved } = atPointerData;
+			if (!isMoved) {
+				clearTimeout(idTimeout);
+				entity.dispatchEvent(new PointerEvent(`dragbegin`, { position: event.position }));
+			}
+			entity.dispatchEvent(new PointerEvent(`drag`, { position: event.position }));
+			atPointerData.isMoved = true;
+		});
+	}
 	/**
 	 * Creates a new instance of the Entity class.
 	 * @param {string} name The name of the entity.
 	 */
 	constructor(name = `Entity`) {
 		super(name);
+
+		this.addEventListener(`connect`, (event) => {
+			Entity.#instances.unshift(this);
+		});
+		this.addEventListener(`disconnect`, (event) => {
+			const index = Entity.#instances.indexOf(this);
+			if (index > 0) {
+				Entity.#instances.splice(index, 1);
+			}
+		});
+
 		this.addEventListener(`tryadoptchild`, (event) => {
 			if (!(event.node instanceof Entity)) {
 				event.preventDefault();
@@ -115,7 +182,6 @@ class Entity extends Node {
 	}
 	/**
 	 * Checks if a point is within the mesh of the entity.
-	 * @abstract
 	 * @param {Readonly<Point2D>} point The point to check.
 	 * @returns {boolean} Whether the point is within the mesh.
 	 * @throws {ReferenceError} If function not implemented.

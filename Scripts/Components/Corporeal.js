@@ -133,13 +133,12 @@ class Corporeal extends Entity {
 	 * Creates a new instance of the Corporeal class.
 	 * @param {string} name The name of the corporeal entity.
 	 */
-	constructor(name = ``) {
+	constructor(name = `Corporeal`) {
 		super(name);
 
 		this.addEventListener(`connect`, (event) => {
 			Corporeal.#instances.push(this);
 		});
-
 		this.addEventListener(`disconnect`, (event) => {
 			const index = Corporeal.#instances.indexOf(this);
 			if (index > 0) {

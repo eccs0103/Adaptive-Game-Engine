@@ -19,7 +19,7 @@ class InterfaceItem extends Entity {
 	 * Creates a new instance of the InterfaceItem class.
 	 * @param {string} name The name of the interface item.
 	 */
-	constructor(name = ``) {
+	constructor(name = `Interface item`) {
 		super(name);
 	}
 	/**
