@@ -10,6 +10,8 @@ Engine for creating adaptive animations and small games.\
 - Listener names added.
 - Fixed bug with mouse capture.
 - Added events `click`, `hold`, `dragbegin`, `drag`, `dragend` for type `Entity`.
+- Fixed error with vertical coordination.
+- Improved click algorithm.
 
 ### 1.3.4 : Adaptive Core 2.6.8 (21.03.2024)
 - Function `isMesh` moved from `Corporeal` to `Entity`.
